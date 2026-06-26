@@ -1,38 +1,54 @@
 # Cybersecurity Hub
 
-A lightweight security audit tool for small businesses, paired with a static education hub for learning ethical hacking fundamentals.
+![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python) ![stdlib only](https://img.shields.io/badge/dependencies-stdlib_only-green) ![HTML/CSS](https://img.shields.io/badge/Frontend-HTML%2FCSS-orange) ![Live Data](https://img.shields.io/badge/Data-Live_NVD_%2B_CISA-red)
 
-## Components
+Part of the **SPIRIT Labs** portfolio — AI-powered products by [Rishi Thangada](https://github.com/rishithangada).
 
-**Scanner** — input a domain or IP, receive a structured JSON report covering open ports, SSL certificate status, and common misconfigurations. Pure Python stdlib, no external dependencies.
+---
 
-**Education Hub** — static site covering ethical hacking basics, top security tools, and a structured beginner learning path. Functions as a lead magnet for the audit tool.
+## What It Does
 
-## Tech Stack
+Cybersecurity Hub is three tools in one: a live threat-intel dashboard pulling from NVD, CISA KEV, and Hacker News; a port scanner SaaS tool for quick security audits; and a 3-page education hub covering ethical hacking fundamentals.
 
-- **Scanner:** Python 3, stdlib only (`socket`, `ssl`, `urllib`)
-- **Education site:** Static HTML/CSS
-- **Output:** JSON report + human-readable terminal summary
+No external Python dependencies — pure stdlib throughout.
 
-## Project Structure
+---
 
-```
-cybersec-hub/
-├── scanner.py        # Port scan, SSL check, vuln probe
-├── hub/
-│   ├── index.html    # Ethical hacking intro
-│   ├── tools.html    # Top 10 security tools
-│   └── course.html   # 5-module learning path
-└── reports/          # Scan output directory
-```
+## Features
 
-## Usage
+- **Live threat feed** — CVEs from NVD, known exploited vulnerabilities from CISA KEV, and security news from HN; auto-refreshes every 60 seconds
+- **Port scanner** — scans 20 common ports, performs SSL certificate check, audits HTTP security headers; outputs structured JSON + terminal summary
+- **Education hub** — 3-page static site: ethical hacking intro, top security tools, and a 5-module beginner learning path
 
+---
+
+## Setup
+
+Populate the live feed:
 ```bash
-python scanner.py --target example.com
-python scanner.py --target 192.168.1.1 --output reports/scan.json
+python3 fetch_feed.py
 ```
+
+Open the hub:
+```bash
+open hub/index.html
+```
+
+Run the scanner:
+```bash
+python3 scanner.py example.com
+```
+
+---
+
+## Cron (auto-refresh feed)
+
+```
+*/30 * * * * cd ~/cybersec-hub && python3 fetch_feed.py
+```
+
+---
 
 ## Status
 
-Planning. Part of the SPIRIT OS project portfolio.
+Active development. Part of the SPIRIT Labs product portfolio.
