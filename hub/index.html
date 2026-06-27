@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberSec Hub — Threat Intel</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --border: #30363d;
+    --green: #3fb950; --cyan: #79c0ff; --yellow: #e3b341;
+    --text: #c9d1d9; --muted: #8b949e;
+    --red: #f85149; --orange: #e3824e;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace;
+    line-height: 1.6; min-height: 100vh; }
+  nav { background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 0.8rem 2rem; display: flex; align-items: center; gap: 2rem; }
+  nav .logo { color: var(--green); font-weight: bold; font-size: 1.1rem; text-decoration: none; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+  nav a:hover, nav a.active { color: var(--cyan); }
+
+  .intel-header { padding: 2rem 2rem 1.2rem; max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.8rem; }
+  .intel-header h1 { color: var(--cyan); font-size: 1.4rem; letter-spacing: 0.08em; }
+  .intel-header h1 span { color: var(--green); }
+  #status { color: var(--muted); font-size: 0.8rem; }
+  #refresh-btn { background: none; border: 1px solid var(--border); color: var(--green);
+    font-family: inherit; font-size: 0.8rem; padding: 0.3rem 0.8rem; cursor: pointer;
+    border-radius: 4px; }
+  #refresh-btn:hover { border-color: var(--green); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.2rem; max-width: 1200px; margin: 0 auto 2rem; padding: 0 2rem; }
+  .panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+    display: flex; flex-direction: column; }
+  .panel-title { color: var(--yellow); font-size: 0.85rem; letter-spacing: 0.08em;
+    padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border); }
+  .panel-body { padding: 1rem; overflow-y: auto; max-height: 520px; flex: 1; }
+
+  /* CVE cards */
+  .cve-card { background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+    padding: 0.8rem; margin-bottom: 0.7rem; }
+  .cve-card:last-child { margin-bottom: 0; }
+  .cve-top { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+  .cve-id { color: var(--cyan); font-size: 0.82rem; font-weight: bold; }
+  .badge { font-size: 0.68rem; padding: 0.15rem 0.45rem; border-radius: 3px;
+    font-weight: bold; letter-spacing: 0.06em; }
+  .badge-CRITICAL { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.4); }
+  .badge-HIGH     { background: rgba(227,130,78,0.15); color: var(--orange); border: 1px solid rgba(227,130,78,0.4); }
+  .badge-MEDIUM   { background: rgba(227,179,65,0.15); color: var(--yellow); border: 1px solid rgba(227,179,65,0.4); }
+  .badge-LOW      { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.4); }
+  .badge-UNKNOWN  { background: rgba(139,148,158,0.1); color: var(--muted); border: 1px solid var(--border); }
+  .badge-ransomware { background: rgba(248,81,73,0.1); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .cvss { color: var(--muted); font-size: 0.75rem; margin-left: auto; }
+  .cve-desc { color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+
+  /* KEV list */
+  .kev-item { padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+  .kev-item:last-child { border-bottom: none; }
+  .kev-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; flex-wrap: wrap; }
+  .kev-name { color: var(--text); font-size: 0.82rem; font-weight: bold; }
+  .kev-date { color: var(--muted); font-size: 0.72rem; margin-left: auto; }
+  .kev-desc { color: var(--muted); font-size: 0.77rem; line-height: 1.5; }
+
+  /* News list */
+  .news-item { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+  .news-item:last-child { border-bottom: none; }
+  .news-link { color: var(--cyan); text-decoration: none; font-size: 0.84rem; line-height: 1.4;
+    display: block; margin-bottom: 0.3rem; }
+  .news-link:hover { color: var(--green); }
+  .news-meta { color: var(--muted); font-size: 0.72rem; }
+  .news-pts { color: var(--yellow); }
+
+  /* Static advisory tools */
+  .tool-panel { min-height: 100%; }
+  .tool-stack { display: grid; gap: 0.85rem; }
+  .tool-label { display: grid; gap: 0.35rem; color: var(--muted); font-size: 0.72rem;
+    letter-spacing: 0.06em; text-transform: uppercase; }
+  textarea, select { width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-family: inherit; font-size: 0.82rem; border-radius: 4px;
+    padding: 0.7rem; outline: none; }
+  textarea { min-height: 145px; resize: vertical; line-height: 1.5; }
+  textarea:focus, select:focus { border-color: var(--cyan); }
+  .tool-btn { background: rgba(63,185,80,0.12); border: 1px solid rgba(63,185,80,0.45);
+    color: var(--green); font-family: inherit; font-size: 0.78rem; font-weight: bold;
+    letter-spacing: 0.06em; padding: 0.65rem 0.85rem; border-radius: 4px; cursor: pointer; }
+  .tool-btn:hover { background: rgba(63,185,80,0.18); }
+  .tool-output { background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+    padding: 0.85rem; min-height: 96px; }
+  .plain-grid { display: grid; gap: 0.75rem; }
+  .plain-block { border-left: 2px solid var(--cyan); padding-left: 0.75rem; }
+  .plain-block strong { color: var(--cyan); display: block; font-size: 0.76rem;
+    letter-spacing: 0.08em; margin-bottom: 0.2rem; text-transform: uppercase; }
+  .plain-block span { color: var(--text); font-size: 0.82rem; }
+  .cost-number { color: var(--red); font-size: 1.8rem; font-weight: bold; line-height: 1.1; }
+  .tier-card { border: 1px solid rgba(121,192,255,0.35); background: rgba(121,192,255,0.08);
+    border-radius: 4px; padding: 0.8rem; }
+  .tier-name { color: var(--cyan); font-weight: bold; font-size: 0.9rem; }
+  .tier-copy { color: var(--muted); font-size: 0.76rem; margin-top: 0.25rem; }
+  .calc-meta { display: grid; gap: 0.35rem; color: var(--muted); font-size: 0.76rem; }
+  .calc-meta span { color: var(--text); }
+
+  .msg { color: var(--muted); font-size: 0.85rem; padding: 1rem 0; text-align: center; }
+  .msg.error { color: var(--red); }
+
+  footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem;
+    color: var(--muted); font-size: 0.8rem; text-align: center; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">[ cybersec-hub ]</a>
+  <a href="index.html" class="active">threat intel</a>
+  <a href="tools.html">tools</a>
+  <a href="course.html">course</a>
+  <a href="pentest.html">services</a>
+</nav>
+
+<div class="intel-header">
+  <h1>&gt; CYBER <span>THREAT</span> INTELLIGENCE</h1>
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <span id="status">loading...</span>
+    <button id="refresh-btn" onclick="loadFeed()">[ refresh ]</button>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="panel tool-panel">
+    <div class="panel-title">// CVE IN PLAIN ENGLISH</div>
+    <div class="panel-body">
+      <div class="tool-stack">
+        <label class="tool-label" for="cve-input">
+          Paste CVE description
+          <textarea id="cve-input" placeholder="Example: A buffer overflow vulnerability in ExampleSoft Gateway allows remote unauthenticated attackers to execute arbitrary code via a crafted request..."></textarea>
+        </label>
+        <button class="tool-btn" onclick="explainCVE()">[ explain risk ]</button>
+        <div class="tool-output" id="cve-explain-output">
+          <div class="msg">paste a CVE description to convert vendor language into operator notes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel tool-panel">
+    <div class="panel-title">// BREACH COST CALCULATOR</div>
+    <div class="panel-body">
+      <div class="tool-stack">
+        <label class="tool-label" for="calc-industry">
+          Industry
+          <select id="calc-industry" onchange="calculateBreachCost()">
+            <option value="healthcare">Healthcare</option>
+            <option value="finance">Finance</option>
+            <option value="retail">Retail / ecommerce</option>
+            <option value="saas">SaaS / technology</option>
+            <option value="manufacturing">Manufacturing</option>
+            <option value="general">General business</option>
+          </select>
+        </label>
+        <label class="tool-label" for="calc-size">
+          Company size
+          <select id="calc-size" onchange="calculateBreachCost()">
+            <option value="small">1-50 employees</option>
+            <option value="mid">51-250 employees</option>
+            <option value="growth">251-1000 employees</option>
+            <option value="enterprise">1000+ employees</option>
+          </select>
+        </label>
+        <label class="tool-label" for="calc-data">
+          Data exposed
+          <select id="calc-data" onchange="calculateBreachCost()">
+            <option value="pii">Customer PII</option>
+            <option value="payment">Payment data</option>
+            <option value="health">Health records</option>
+            <option value="credentials">Employee/customer credentials</option>
+            <option value="ip">Source code / trade secrets</option>
+          </select>
+        </label>
+        <div class="tool-output" id="breach-output"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">// LATEST CVEs (NVD)</div>
+    <div class="panel-body" id="cve-panel"><div class="msg">loading...</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">// ACTIVELY EXPLOITED (CISA KEV)</div>
+    <div class="panel-body" id="kev-panel"><div class="msg">loading...</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">// THREAT INTEL NEWS (HN)</div>
+    <div class="panel-body" id="news-panel"><div class="msg">loading...</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">// THREAT NEWS (THE HACKER NEWS)</div>
+    <div class="panel-body" id="threat-news-panel"><div class="msg">loading...</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">// EXPLOIT-DB — NEW EXPLOITS</div>
+    <div class="panel-body" id="exploits-panel"><div class="msg">loading...</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">// SANS ISC DIARY</div>
+    <div class="panel-body" id="sans-panel"><div class="msg">loading...</div></div>
+  </div>
+</div>
+
+<footer>cybersec-hub &mdash; threat intel &mdash; feed auto-refreshes every 60s &mdash; run fetch_feed.py to update</footer>
+
+<script>
+const SEV_ORDER = ["CRITICAL","HIGH","MEDIUM","LOW","UNKNOWN"];
+
+function badge(cls, text) {
+  return `<span class="badge badge-${cls}">${text}</span>`;
+}
+
+function renderCVEs(cves) {
+  if (!cves.length) return '<div class="msg">no CVEs in feed</div>';
+  return cves.map(c => {
+    const sev = SEV_ORDER.includes(c.severity) ? c.severity : "UNKNOWN";
+    const score = c.cvss_score != null ? `<span class="cvss">CVSS ${c.cvss_score}</span>` : "";
+    const pub = c.published ? c.published.slice(0,10) : "";
+    return `<div class="cve-card">
+      <div class="cve-top">
+        <span class="cve-id">${c.id}</span>
+        ${badge(sev, sev)}
+        ${score}
+      </div>
+      <div class="cve-desc">${c.description || "No description."}</div>
+      ${pub ? `<div class="cve-desc" style="margin-top:0.3rem;font-size:0.7rem;">${pub}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function renderKEV(kev) {
+  if (!kev.length) return '<div class="msg">no KEV entries in feed</div>';
+  return kev.map(v => {
+    const ransomware = v.knownRansomwareCampaignUse && v.knownRansomwareCampaignUse !== "Unknown"
+      ? badge("ransomware", "RANSOMWARE") : "";
+    return `<div class="kev-item">
+      <div class="kev-top">
+        <span class="cve-id">${v.cveID}</span>
+        ${ransomware}
+        <span class="kev-date">${v.dateAdded}</span>
+      </div>
+      <div class="kev-name">${v.vulnerabilityName}</div>
+      <div class="kev-desc" style="margin-top:0.3rem;">${v.shortDescription || ""}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderNews(news) {
+  if (!news.length) return '<div class="msg">no news in feed</div>';
+  return news.map(n => {
+    const pts = n.points ? `<span class="news-pts">${n.points} pts</span> &middot; ` : "";
+    const when = n.created_at ? n.created_at.slice(0,10) : "";
+    return `<div class="news-item">
+      <a class="news-link" href="${n.url}" target="_blank" rel="noopener">${n.title}</a>
+      <div class="news-meta">${pts}${n.author} &middot; ${when}</div>
+    </div>`;
+  }).join("");
+}
+
+// Generic renderer for RSS-style items (threat_news, exploits, sans_diary)
+function renderRSS(items, emptyMsg) {
+  if (!items || !items.length) return `<div class="msg">${emptyMsg}</div>`;
+  return items.map(n => {
+    const when = n.published ? n.published.slice(0, 16) : "";
+    const desc = n.description
+      ? `<div class="cve-desc" style="margin-top:0.3rem;">${n.description.replace(/<[^>]*>/g,"").slice(0,200)}</div>`
+      : "";
+    return `<div class="news-item">
+      <a class="news-link" href="${n.link}" target="_blank" rel="noopener">${n.title || "(no title)"}</a>
+      ${desc}
+      ${when ? `<div class="news-meta">${when}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+const RISK_TERMS = [
+  ["remote", "attackers may not need local access"],
+  ["unauthenticated", "attackers may not need a valid login"],
+  ["arbitrary code", "could let an attacker run commands"],
+  ["remote code execution", "could let an attacker run commands"],
+  ["privilege escalation", "could turn a low-level account into admin access"],
+  ["sql injection", "could expose or modify database records"],
+  ["cross-site scripting", "could steal browser sessions or run malicious scripts"],
+  ["denial of service", "could knock the service offline"],
+  ["buffer overflow", "memory handling bug that can crash or take over software"],
+  ["information disclosure", "could leak sensitive data"],
+  ["authentication bypass", "could let attackers skip login controls"],
+];
+
+function sentenceCase(text) {
+  const trimmed = text.trim();
+  if (!trimmed) return "";
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).replace(/\s+/g, " ");
+}
+
+function inferCVEImpact(description) {
+  const d = description.toLowerCase();
+  const hits = RISK_TERMS.filter(([needle]) => d.includes(needle)).map(([, meaning]) => meaning);
+  if (hits.length) return [...new Set(hits)].slice(0, 3).join("; ") + ".";
+  return "A weakness could be abused if the affected product is exposed, unpatched, or reachable by an attacker.";
+}
+
+function inferAudience(description) {
+  const d = description.toLowerCase();
+  if (d.includes("windows") || d.includes("linux") || d.includes("kernel")) return "Endpoint, server, and infrastructure teams running the named platform.";
+  if (d.includes("router") || d.includes("gateway") || d.includes("vpn") || d.includes("firewall")) return "Network edge owners, MSPs, and anyone exposing the appliance to the internet.";
+  if (d.includes("wordpress") || d.includes("plugin") || d.includes("web")) return "Web app owners and teams running the affected plugin, CMS, or internet-facing app.";
+  if (d.includes("database") || d.includes("sql")) return "Database and application teams that store customer or operational records.";
+  return "Owners of the affected product, especially if it is internet-facing or handles sensitive data.";
+}
+
+function inferAction(description) {
+  const d = description.toLowerCase();
+  const actions = ["Patch or upgrade the affected product."];
+  if (d.includes("remote") || d.includes("internet") || d.includes("unauthenticated")) {
+    actions.push("Remove public exposure until patched.");
+  }
+  if (d.includes("credential") || d.includes("authentication") || d.includes("bypass")) {
+    actions.push("Rotate credentials and review auth logs.");
+  }
+  if (d.includes("exploit") || d.includes("active")) {
+    actions.push("Hunt logs for suspicious access immediately.");
+  } else {
+    actions.push("Check logs for unexpected access after patching.");
+  }
+  return actions.join(" ");
+}
+
+function explainCVE() {
+  const input = document.getElementById("cve-input").value.trim();
+  const out = document.getElementById("cve-explain-output");
+  if (!input) {
+    out.innerHTML = '<div class="msg error">paste a CVE description first</div>';
+    return;
+  }
+  out.innerHTML = `<div class="plain-grid">
+    <div class="plain-block"><strong>What it means</strong><span>${inferCVEImpact(input)}</span></div>
+    <div class="plain-block"><strong>Who should care</strong><span>${inferAudience(input)}</span></div>
+    <div class="plain-block"><strong>What to do now</strong><span>${inferAction(input)}</span></div>
+    <div class="plain-block"><strong>Original signal</strong><span>${sentenceCase(input).slice(0, 260)}${input.length > 260 ? "..." : ""}</span></div>
+  </div>`;
+}
+
+const COST_FACTORS = {
+  industry: {
+    healthcare: { label: "Healthcare", base: 980000, multiplier: 1.7 },
+    finance: { label: "Finance", base: 860000, multiplier: 1.55 },
+    retail: { label: "Retail / ecommerce", base: 420000, multiplier: 1.05 },
+    saas: { label: "SaaS / technology", base: 620000, multiplier: 1.25 },
+    manufacturing: { label: "Manufacturing", base: 510000, multiplier: 1.15 },
+    general: { label: "General business", base: 360000, multiplier: 1 },
+  },
+  size: {
+    small: { label: "1-50 employees", records: 3000, multiplier: 0.55 },
+    mid: { label: "51-250 employees", records: 18000, multiplier: 1 },
+    growth: { label: "251-1000 employees", records: 70000, multiplier: 1.75 },
+    enterprise: { label: "1000+ employees", records: 180000, multiplier: 2.8 },
+  },
+  data: {
+    pii: { label: "Customer PII", recordCost: 165, multiplier: 1 },
+    payment: { label: "Payment data", recordCost: 230, multiplier: 1.35 },
+    health: { label: "Health records", recordCost: 410, multiplier: 1.9 },
+    credentials: { label: "Credentials", recordCost: 185, multiplier: 1.25 },
+    ip: { label: "Source code / trade secrets", recordCost: 260, multiplier: 1.55 },
+  },
+};
+
+function money(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function recommendTier(cost) {
+  if (cost < 750000) {
+    return {
+      name: "$299 Recon Scan",
+      copy: "Best first step for small teams: exposed services, basic web checks, and prioritized findings.",
+    };
+  }
+  if (cost < 2200000) {
+    return {
+      name: "$999 Web/App Pen Test",
+      copy: "Recommended for teams with customer data or payment flows that need manual validation.",
+    };
+  }
+  return {
+    name: "$4,999 Red Team Assessment",
+    copy: "Recommended for high-impact data, regulated industries, or larger attack surfaces.",
+  };
+}
+
+function calculateBreachCost() {
+  const industry = COST_FACTORS.industry[document.getElementById("calc-industry").value];
+  const size = COST_FACTORS.size[document.getElementById("calc-size").value];
+  const data = COST_FACTORS.data[document.getElementById("calc-data").value];
+  const recordLoss = size.records * data.recordCost;
+  const responseOverhead = industry.base * size.multiplier;
+  const estimate = Math.round((recordLoss + responseOverhead) * industry.multiplier * data.multiplier);
+  const tier = recommendTier(estimate);
+
+  document.getElementById("breach-output").innerHTML = `
+    <div class="cost-number">${money(estimate)}</div>
+    <div class="calc-meta" style="margin-top:0.6rem;">
+      <div>Industry: <span>${industry.label}</span></div>
+      <div>Likely records at risk: <span>${size.records.toLocaleString()}</span></div>
+      <div>Data sensitivity: <span>${data.label}</span></div>
+    </div>
+    <div class="tier-card" style="margin-top:0.9rem;">
+      <div class="tier-name">Recommended tier: ${tier.name}</div>
+      <div class="tier-copy">${tier.copy}</div>
+    </div>
+  `;
+}
+
+async function loadFeed() {
+  document.getElementById("status").textContent = "refreshing...";
+  try {
+    const r = await fetch("../feed.json?_=" + Date.now());
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const feed = await r.json();
+
+    document.getElementById("cve-panel").innerHTML         = renderCVEs(feed.cves  || []);
+    document.getElementById("kev-panel").innerHTML         = renderKEV(feed.kev   || []);
+    document.getElementById("news-panel").innerHTML        = renderNews(feed.news  || []);
+    document.getElementById("threat-news-panel").innerHTML = renderRSS(feed.threat_news || [], "no threat news in feed");
+    document.getElementById("exploits-panel").innerHTML    = renderRSS(feed.exploits    || [], "no exploits in feed");
+    document.getElementById("sans-panel").innerHTML        = renderRSS(feed.sans_diary  || [], "no SANS diary in feed");
+
+    const ts = feed.updated ? new Date(feed.updated).toLocaleString() : "unknown";
+    document.getElementById("status").textContent = "updated: " + ts;
+  } catch (e) {
+    document.getElementById("status").textContent = "error: " + e.message;
+    ["cve-panel","kev-panel","news-panel","threat-news-panel","exploits-panel","sans-panel"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el.querySelector(".msg")) return;
+      el.innerHTML = `<div class="msg error">feed unavailable — run: python fetch_feed.py</div>`;
+    });
+  }
+}
+
+calculateBreachCost();
+loadFeed();
+setInterval(loadFeed, 60000);
+</script>
+</body>
+</html>
