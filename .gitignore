@@ -1,0 +1,9 @@
+.vercel
+.env
+.env.local
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite
+*.sqlite3
+reports/
