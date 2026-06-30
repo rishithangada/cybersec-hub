@@ -5,11 +5,10 @@ from __future__ import annotations
 
 import json
 import os
-import threading
-import urllib.request
 from typing import Any
 
 import auth_gate
+from make_notifier import notify_payment
 
 try:
   from flask import Blueprint, jsonify, request
@@ -34,21 +33,6 @@ def _load_dotenv() -> None:
       continue
     key, value = line.split("=", 1)
     os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
-
-
-def _trigger_active_scan(intake_id: str) -> None:
-  def run() -> None:
-    try:
-      req = urllib.request.Request(
-        f"http://127.0.0.1:5001/scan/active/{intake_id}",
-        data=b"{}",
-        headers={"Content-Type": "application/json"},
-        method="POST",
-      )
-      urllib.request.urlopen(req, timeout=3).read(200)
-    except Exception as exc:
-      print(f"active_scan_trigger_failed: {exc}")
-  threading.Thread(target=run, daemon=True).start()
 
 
 def _metadata_intake_id(event: dict[str, Any]) -> tuple[str, str]:
@@ -78,7 +62,12 @@ def handle_webhook(payload: bytes, headers: dict[str, str]) -> tuple[dict[str, A
     intake_id, payment_intent_id = _metadata_intake_id(event)
     if intake_id and payment_intent_id:
       auth_gate.confirm_payment(intake_id, payment_intent_id)
-      _trigger_active_scan(intake_id)
+      auth = auth_gate.get_authorization(intake_id) or {}
+      notify_payment(
+        stripe_session_id=str(event.get("id") or payment_intent_id),
+        email=str(auth.get("client_email") or ""),
+        domain=str(auth.get("domain") or ""),
+      )
   return {"received": True}, 200
 
 

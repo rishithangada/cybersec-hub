@@ -24,6 +24,7 @@ import auth_gate
 import report_generator
 import report_mailer
 import scanner
+from make_notifier import notify_intake
 
 try:
   from flask import Flask, jsonify, request
@@ -45,15 +46,17 @@ def _client_ip(headers: dict[str, str], remote_addr: str | None) -> str:
 
 
 def _validate_intake(data: dict) -> tuple[str, int] | None:
+  client_name = str(data.get("client_name") or data.get("name") or "").strip()
+  client_email = str(data.get("client_email") or data.get("email") or "").strip()
   if not data.get("owns_confirmed"):
     return "Client must confirm they own or are authorized to test this domain.", 403
   if not data.get("roe_confirmed"):
     return "Client must explicitly authorize D2D Spirit to perform security testing.", 403
   if not auth_gate.normalize_domain(str(data.get("domain", ""))):
     return "Domain is required.", 400
-  if not str(data.get("client_name", "")).strip():
+  if not client_name:
     return "Client name is required.", 400
-  if not EMAIL_RE.match(str(data.get("client_email", "")).strip()):
+  if not EMAIL_RE.match(client_email):
     return "Valid client email is required.", 400
   return None
 
@@ -63,13 +66,22 @@ def create_intake(data: dict, headers: dict[str, str], remote_addr: str | None):
   if err:
     msg, status = err
     return {"error": msg}, status
+  client_name = str(data.get("client_name") or data.get("name") or "").strip()
+  client_email = str(data.get("client_email") or data.get("email") or "").strip()
+  domain = str(data["domain"])
   intake_id = auth_gate.create_authorization(
-    str(data["domain"]),
-    str(data["client_name"]),
-    str(data["client_email"]),
+    domain,
+    client_name,
+    client_email,
     owns_confirmed=bool(data["owns_confirmed"]),
     roe_confirmed=bool(data["roe_confirmed"]),
     ip=_client_ip(headers, remote_addr),
+  )
+  notify_intake(
+    name=client_name,
+    email=client_email,
+    domain=auth_gate.normalize_domain(domain),
+    package=str(data.get("package") or "Starter $499"),
   )
   return {
     "intake_id": intake_id,
