@@ -216,12 +216,13 @@ class StdlibHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-  port = int(os.getenv("INTAKE_PORT", "5001"))
+  port = int(os.getenv("PORT", os.getenv("INTAKE_PORT", "5001")))
+  host = "0.0.0.0"
   if Flask is not None:
-    app.run(host="127.0.0.1", port=port)
+    app.run(host=host, port=port)
     return
-  server = ThreadingHTTPServer(("127.0.0.1", port), StdlibHandler)
-  print(f"intake_server stdlib fallback listening on http://127.0.0.1:{port}")
+  server = ThreadingHTTPServer((host, port), StdlibHandler)
+  print(f"intake_server listening on http://{host}:{port}")
   server.serve_forever()
 
 
