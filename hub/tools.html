@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberSec Hub — Tools</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --border: #30363d;
+    --green: #3fb950; --cyan: #79c0ff; --yellow: #e3b341; --red: #f85149;
+    --text: #c9d1d9; --muted: #8b949e;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace;
+    line-height: 1.7; min-height: 100vh; }
+  nav { background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 0.8rem 2rem; display: flex; align-items: center; gap: 2rem; }
+  nav .logo { color: var(--green); font-weight: bold; font-size: 1.1rem; text-decoration: none; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+  nav a:hover, nav a.active { color: var(--cyan); }
+  .hero { padding: 3rem 2rem 2rem; max-width: 860px; margin: 0 auto; }
+  .tag { color: var(--green); font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 0.8rem; }
+  h1 { color: var(--cyan); font-size: 1.9rem; margin-bottom: 0.8rem; }
+  .hero p { color: var(--muted); font-size: 0.92rem; }
+  .tools { max-width: 860px; margin: 0 auto; padding: 0 2rem 3rem; }
+  .tool { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 1.2rem 1.4rem; margin-bottom: 0.8rem; display: grid;
+    grid-template-columns: 160px 1fr auto; align-items: start; gap: 1rem; }
+  .tool-num { color: var(--muted); font-size: 0.8rem; }
+  .tool-name { color: var(--green); font-weight: bold; font-size: 1rem; }
+  .tool-desc { color: var(--text); font-size: 0.88rem; line-height: 1.5; }
+  .tool-meta { color: var(--muted); font-size: 0.78rem; }
+  .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 3px;
+    font-size: 0.72rem; font-weight: bold; white-space: nowrap; }
+  .badge-free { background: #1a3a1a; color: var(--green); border: 1px solid #2a5a2a; }
+  .badge-paid { background: #3a2a1a; color: var(--yellow); border: 1px solid #5a4a2a; }
+  .badge-os { background: #1a2a3a; color: var(--cyan); border: 1px solid #2a4a6a; }
+  @media (max-width: 600px) { .tool { grid-template-columns: 1fr; } }
+  footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem;
+    color: var(--muted); font-size: 0.8rem; text-align: center; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">[ cybersec-hub ]</a>
+  <a href="index.html">home</a>
+  <a href="tools.html" class="active">tools</a>
+  <a href="course.html">course</a>
+</nav>
+
+<div class="hero">
+  <div class="tag">&gt; SECURITY TOOLS // TOP 10</div>
+  <h1>Essential Security Tools</h1>
+  <p>Industry-standard tools used by penetration testers and security researchers worldwide.</p>
+</div>
+
+<div class="tools">
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">01</div>
+      <div class="tool-name">Nmap</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Network mapper. Discovers hosts, open ports, running services, and OS fingerprints. The first tool run in almost every engagement. Foundation of network reconnaissance.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">02</div>
+      <div class="tool-name">Wireshark</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Packet capture and protocol analyzer. Inspect traffic at the byte level to find cleartext credentials, malformed packets, or unexpected connections in real time.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">03</div>
+      <div class="tool-name">Metasploit</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Exploitation framework with a library of 2,000+ modules covering exploits, payloads, and post-exploitation. The standard platform for validating CVEs in controlled environments.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">04</div>
+      <div class="tool-name">Burp Suite</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-paid">community free</span></div>
+    </div>
+    <div class="tool-desc">Web application security testing platform. Intercept, replay, and fuzz HTTP/S traffic. The scanner and intruder modules automate detection of SQLi, XSS, SSRF, and hundreds of other web vulns.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">05</div>
+      <div class="tool-name">Kali Linux</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Debian-based OS pre-loaded with 600+ security tools. The default operating environment for most pen testers. Available as a VM, live USB, or WSL2 image.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">06</div>
+      <div class="tool-name">Aircrack-ng</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Wi-Fi network security toolkit. Captures 802.11 frames, performs WPA/WPA2 handshake cracking, and detects rogue APs. Used for wireless assessments and WPA auditing.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">07</div>
+      <div class="tool-name">John the Ripper</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Password cracker supporting 100+ hash types. Dictionary, brute-force, and rule-based modes. Used to test password policy strength during internal audits.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">08</div>
+      <div class="tool-name">sqlmap</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Automated SQL injection detection and exploitation. Fingerprints the DB engine, dumps tables, and can escalate to OS-level access. Essential for web app assessments.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">09</div>
+      <div class="tool-name">Nikto</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">Web server scanner. Checks for 6,700+ dangerous files, outdated software, and misconfigured headers in minutes. Good first-pass tool before deeper manual testing.</div>
+  </div>
+
+  <div class="tool">
+    <div>
+      <div class="tool-num">10</div>
+      <div class="tool-name">Hashcat</div>
+      <div class="tool-meta" style="margin-top:0.4rem"><span class="badge badge-free">free</span> <span class="badge badge-os">open source</span></div>
+    </div>
+    <div class="tool-desc">GPU-accelerated password recovery. World's fastest hash cracker — benchmarks billions of attempts per second on modern hardware. Used in credential-auditing engagements.</div>
+  </div>
+
+</div>
+
+<footer>cybersec-hub &mdash; educational use only &mdash; always get permission before scanning</footer>
+</body>
+</html>

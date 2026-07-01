@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberSec Hub — Course</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --border: #30363d;
+    --green: #3fb950; --cyan: #79c0ff; --yellow: #e3b341; --purple: #bc8cff;
+    --text: #c9d1d9; --muted: #8b949e;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace;
+    line-height: 1.7; min-height: 100vh; }
+  nav { background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 0.8rem 2rem; display: flex; align-items: center; gap: 2rem; }
+  nav .logo { color: var(--green); font-weight: bold; font-size: 1.1rem; text-decoration: none; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+  nav a:hover, nav a.active { color: var(--cyan); }
+  .hero { padding: 3rem 2rem 2rem; max-width: 860px; margin: 0 auto; }
+  .tag { color: var(--green); font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 0.8rem; }
+  h1 { color: var(--cyan); font-size: 1.9rem; margin-bottom: 0.8rem; }
+  .hero p { color: var(--muted); font-size: 0.92rem; }
+  .path { max-width: 860px; margin: 0 auto; padding: 0 2rem 3rem;
+    display: flex; flex-direction: column; gap: 0; }
+  .module { display: flex; gap: 1.4rem; }
+  .track { display: flex; flex-direction: column; align-items: center; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--green);
+    background: var(--bg); flex-shrink: 0; margin-top: 0.25rem; position: relative; z-index: 1; }
+  .module:first-child .dot { background: var(--green); }
+  .line { width: 2px; background: var(--border); flex: 1; min-height: 1.5rem; }
+  .module:last-child .line { display: none; }
+  .box { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 1.3rem 1.5rem; margin-bottom: 1.2rem; flex: 1; }
+  .mod-header { display: flex; align-items: baseline; gap: 0.8rem; margin-bottom: 0.6rem; }
+  .mod-num { color: var(--muted); font-size: 0.78rem; }
+  .mod-title { color: var(--cyan); font-weight: bold; font-size: 1rem; }
+  .mod-dur { color: var(--yellow); font-size: 0.78rem; margin-left: auto; }
+  .mod-desc { color: var(--text); font-size: 0.87rem; margin-bottom: 0.8rem; }
+  .topics { list-style: none; }
+  .topics li { color: var(--muted); font-size: 0.82rem; padding: 0.15rem 0; }
+  .topics li::before { content: '> '; color: var(--green); }
+  .cert-box { background: var(--bg2); border: 1px solid var(--yellow); border-radius: 6px;
+    padding: 1.5rem; max-width: 560px; margin: 0 auto 3rem; }
+  .cert-box h3 { color: var(--yellow); margin-bottom: 0.5rem; }
+  .cert-box p { color: var(--muted); font-size: 0.87rem; margin-bottom: 0.8rem; }
+  .cert-list { list-style: none; }
+  .cert-list li { color: var(--text); font-size: 0.85rem; padding: 0.2rem 0; }
+  .cert-list li::before { content: '* '; color: var(--yellow); }
+  footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem;
+    color: var(--muted); font-size: 0.8rem; text-align: center; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">[ cybersec-hub ]</a>
+  <a href="index.html">home</a>
+  <a href="tools.html">tools</a>
+  <a href="course.html" class="active">course</a>
+</nav>
+
+<div class="hero">
+  <div class="tag">&gt; LEARNING PATH // 5 MODULES</div>
+  <h1>Ethical Hacking Course</h1>
+  <p>A structured path from networking basics to bug bounty hunting. Each module builds on the last.</p>
+</div>
+
+<div class="path">
+
+  <div class="module">
+    <div class="track"><div class="dot"></div><div class="line"></div></div>
+    <div class="box">
+      <div class="mod-header">
+        <span class="mod-num">MODULE 01</span>
+        <span class="mod-title">Networking Fundamentals</span>
+        <span class="mod-dur">~3 weeks</span>
+      </div>
+      <div class="mod-desc">Everything runs on networks. You cannot attack or defend what you don't understand at the packet level.</div>
+      <ul class="topics">
+        <li>OSI model layers and TCP/IP stack</li>
+        <li>IP addressing, subnetting, CIDR notation</li>
+        <li>DNS, DHCP, ARP — how name resolution works</li>
+        <li>TCP handshake, UDP, ICMP</li>
+        <li>Packet capture with Wireshark — reading pcap files</li>
+        <li>Common protocols: HTTP, FTP, SSH, SMTP</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module">
+    <div class="track"><div class="dot"></div><div class="line"></div></div>
+    <div class="box">
+      <div class="mod-header">
+        <span class="mod-num">MODULE 02</span>
+        <span class="mod-title">Reconnaissance &amp; Scanning</span>
+        <span class="mod-dur">~3 weeks</span>
+      </div>
+      <div class="mod-desc">Map the target before touching it. Passive OSINT leaves no trace; active scanning leaves logs.</div>
+      <ul class="topics">
+        <li>OSINT techniques: WHOIS, Shodan, Google dorks</li>
+        <li>Subdomain enumeration with amass / subfinder</li>
+        <li>Nmap port scanning — flags, timing, scripts (NSE)</li>
+        <li>Service and version fingerprinting</li>
+        <li>Vulnerability scanning with Nikto and OpenVAS</li>
+        <li>Building a target profile from public data</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module">
+    <div class="track"><div class="dot"></div><div class="line"></div></div>
+    <div class="box">
+      <div class="mod-header">
+        <span class="mod-num">MODULE 03</span>
+        <span class="mod-title">Exploitation Techniques</span>
+        <span class="mod-dur">~4 weeks</span>
+      </div>
+      <div class="mod-desc">Understand how real attacks work by replicating them in lab environments — never on production systems without written scope.</div>
+      <ul class="topics">
+        <li>Metasploit framework — modules, payloads, sessions</li>
+        <li>Common CVEs and how to look them up (NVD, ExploitDB)</li>
+        <li>Buffer overflows — theory and practice on lab binaries</li>
+        <li>Web attacks: SQLi, XSS, CSRF, file inclusion</li>
+        <li>Password attacks: dictionary, brute-force, hash cracking</li>
+        <li>Setting up a home lab (VMs, Vulnhub, HackTheBox)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module">
+    <div class="track"><div class="dot"></div><div class="line"></div></div>
+    <div class="box">
+      <div class="mod-header">
+        <span class="mod-num">MODULE 04</span>
+        <span class="mod-title">Post-Exploitation &amp; Reporting</span>
+        <span class="mod-dur">~3 weeks</span>
+      </div>
+      <div class="mod-desc">Getting in is half the job. Understanding impact and communicating it clearly is what clients actually pay for.</div>
+      <ul class="topics">
+        <li>Privilege escalation on Linux and Windows</li>
+        <li>Lateral movement — pass-the-hash, pivoting</li>
+        <li>Persistence mechanisms (for lab / CTF contexts)</li>
+        <li>Covering tracks — log awareness and forensics basics</li>
+        <li>Writing a pentest report: executive summary to PoC</li>
+        <li>CVSS scoring and risk rating findings</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module">
+    <div class="track"><div class="dot"></div><div class="line"></div></div>
+    <div class="box">
+      <div class="mod-header">
+        <span class="mod-num">MODULE 05</span>
+        <span class="mod-title">Bug Bounty Hunting</span>
+        <span class="mod-dur">~4 weeks + ongoing</span>
+      </div>
+      <div class="mod-desc">Apply everything on real-world programs. Bug bounty turns ethical hacking into a paid skill you can build a career on.</div>
+      <ul class="topics">
+        <li>Platforms: HackerOne, Bugcrowd, Intigriti — reading scopes</li>
+        <li>OWASP Top 10 — the core checklist for web targets</li>
+        <li>Burp Suite Pro workflow for web app testing</li>
+        <li>SSRF, IDOR, broken access control — high-payout classes</li>
+        <li>Writing a quality disclosure report</li>
+        <li>Building a reputation and moving to private programs</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<div class="cert-box" style="max-width:860px;margin:0 auto 2rem;padding:0 2rem">
+  <div style="background:var(--bg2);border:1px solid var(--yellow);border-radius:6px;padding:1.5rem">
+    <h3 style="color:var(--yellow);margin-bottom:0.5rem">// Recommended certifications</h3>
+    <p style="color:var(--muted);font-size:0.87rem;margin-bottom:0.8rem">After completing the learning path, these certs validate your skills to employers:</p>
+    <ul class="cert-list">
+      <li>CompTIA Security+ — entry-level, vendor-neutral, widely recognized</li>
+      <li>CEH (Certified Ethical Hacker) — EC-Council, good for corporate roles</li>
+      <li>OSCP (Offensive Security Certified Professional) — hands-on, industry gold standard</li>
+      <li>eJPT (eLearnSecurity Junior Penetration Tester) — great first cert, affordable</li>
+    </ul>
+  </div>
+</div>
+
+<footer>cybersec-hub &mdash; educational use only &mdash; always get permission before scanning</footer>
+</body>
+</html>
